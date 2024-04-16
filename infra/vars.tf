@@ -7,3 +7,8 @@ variable "company" {
   type        = string
   description = "Company name"
 }
+
+variable "availability_zones" {
+  type        = set(string)
+  description = "List of avalaibility zone"
+}

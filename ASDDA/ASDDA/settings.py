@@ -27,7 +27,7 @@ SECRET_KEY = '(-+a^l8x&0b&wo7)etf-@48(5xb%l@9beu=pv$ebsh@#pjcxje'
 DEBUG = environ.get('DEBUG', False)
 
 ALLOWED_HOSTS = [
-	'127.0.0.1'
+	'*'
 ]
 
 

@@ -103,3 +103,17 @@ resource "aws_eks_pod_identity_association" "assda-deployment-sa-2-role" {
   service_account = kubernetes_service_account.asdda-deployment-sa.metadata.0.name
   role_arn        = aws_iam_role.assda-deployment-sa-role.arn
 }
+
+
+resource "kubernetes_secret" "assda-deployment-db-access" {
+  metadata {
+    name = "assda-deployment-db-access"
+  }
+
+  data = {
+    username = "admin"
+    password = "M33TH4CK{scemo_chi_legge :)}"
+  }
+
+  type = "kubernetes.io/basic-auth"
+}

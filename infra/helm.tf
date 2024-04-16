@@ -1,7 +1,6 @@
 data "http" "aws-load-balancer-controller-role-policy" {
   url = "https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.7.1/docs/install/iam_policy.json"
 
-  # Optional request headers
   request_headers = {
     Accept = "application/json"
   }
@@ -15,7 +14,7 @@ resource "aws_iam_role" "aws-load-balancer-controller-role" {
 resource "aws_iam_role_policy" "aws-load-balancer-controller-role-policy" {
   name   = "aws-load-balancer-controller-role-policy"
   role   = aws_iam_role.aws-load-balancer-controller-role.id
-  policy = data.http.aws-load-balancer-controller-role-policy.body
+  policy = data.http.aws-load-balancer-controller-role-policy.response_body
 }
 
 resource "kubernetes_service_account" "aws-load-balancer-controller" {

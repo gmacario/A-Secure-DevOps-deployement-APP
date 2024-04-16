@@ -23,15 +23,9 @@ resource "aws_iam_role_policy_attachment" "safe-cluster-AmazonEKSClusterPolicy" 
 }
 
 
-resource "aws_default_subnet" "default_aza" {
-  availability_zone = "${var.region}a"
-  tags = {
-    "kubernetes.io/role/elb" = 1
-  }
-}
-
-resource "aws_default_subnet" "default_azb" {
-  availability_zone = "${var.region}b"
+resource "aws_default_subnet" "default_az" {
+  for_each          = var.availability_zones
+  availability_zone = "${var.region}${each.key}"
   tags = {
     "kubernetes.io/role/elb" = 1
   }
@@ -85,8 +79,13 @@ resource "aws_eks_node_group" "safe-node" {
   cluster_name    = aws_eks_cluster.safe-cluster.name
   node_group_name = "${var.company}-node"
   node_role_arn   = aws_iam_role.safe-node-role.arn
-  subnet_ids      = [aws_default_subnet.default_aza.id, aws_default_subnet.default_azb.id]
-  instance_types  = ["t3.small"]
+
+  subnet_ids = [
+    for availability_zone in var.availability_zones :
+    aws_default_subnet.default_az[availability_zone].id
+  ]
+
+  instance_types = ["t3.small"]
 
   scaling_config {
     desired_size = 1
@@ -128,7 +127,10 @@ resource "aws_eks_cluster" "safe-cluster" {
   role_arn = aws_iam_role.safe-cluster-role.arn
 
   vpc_config {
-    subnet_ids = [aws_default_subnet.default_aza.id, aws_default_subnet.default_azb.id]
+    subnet_ids = [
+      for availability_zone in var.availability_zones :
+      aws_default_subnet.default_az[availability_zone].id
+    ]
   }
 
   access_config {
